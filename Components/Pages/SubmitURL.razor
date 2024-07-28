@@ -1,0 +1,42 @@
+﻿@page "/submiturl"
+@using ActualPlaylistBuilder.Components.Shared
+@using ActualPlaylistBuilder.Models
+
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@inject IHttpClientFactory ClientFactory
+
+<MudContainer Class="mt-6">
+    <MudTextField @bind-Value="SetlistUrl" Label="URL" Variant="Variant.Outlined" Margin="Margin.Dense" />
+    <MudTextField @bind-Value="SetlistId" Label="Id" Variant="Variant.Outlined" Margin="Margin.Dense" />
+    <MudButton Variant="Variant.Filled" DropShadow="false" OnClick="SubmitUrl">Submit URL</MudButton>
+
+    @if (ShowSetlist)
+    {
+        <MudButton>WTF</MudButton>
+        <Setlist setlistId="@SetlistId" />
+    }
+
+</MudContainer>
+
+@code {
+    private string SetlistUrl { get; set; } = string.Empty;
+    private string SetlistId { get; set; } = string.Empty;
+    private bool ShowSetlist { get; set; } = false;
+
+    private Root? eventData { get; set; }
+    private string[] setlistIds = { "3ab0503" };
+    //3ab0503
+
+    private void SubmitUrl()
+    {
+        SetlistId = setlistIds.Contains(SetlistUrl) ? SetlistUrl : ParseUrlForId();
+        ShowSetlist = true;
+    }
+
+    private string ParseUrlForId()
+    {
+        return SetlistUrl.Split("-").Last().Split(".").First();
+
+    }
+}

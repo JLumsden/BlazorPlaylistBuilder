@@ -1,4 +1,5 @@
 using ActualPlaylistBuilder.Components;
+using ActualPlaylistBuilder.Services;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,8 @@ builder.Services.AddMudServices();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddHttpClient();
+builder.Services.AddSingleton<ISpotifyAppCredentials, SpotifyAppCredentials>();
+builder.Services.AddSingleton<ISpotifyAnonService, SpotifyAnonService>();
 
 var app = builder.Build();
 

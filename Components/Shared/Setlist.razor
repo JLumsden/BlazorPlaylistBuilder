@@ -1,98 +1,60 @@
-﻿@using ActualPlaylistBuilder.Models
+﻿@page "/editlist/{setlistId}"
+@using ActualPlaylistBuilder.Models
 @using System.Text.Json
 @using System.Text.Json.Serialization
+@using ActualPlaylistBuilder.Services
 
 @inject IHttpClientFactory ClientFactory
+@inject ISnackbar Snackbar
+@inject ISpotifyAnonService SpotifyAnonService
 
 <MudContainer>
-    <MudText Typo="Typo.h6">@setlistId</MudText>
     @if (eventData is not null)
-    {
-        @foreach(var s in _items)
-        {
-            <MudText Typo="Typo.h6">
-                @(s.name)
-            </MudText>
-        }
-        
-
-
-
-        <MudDropContainer T="Song" Items="@_items" ItemsSelector="@((item,dropzone) => item.name == dropzone)" Class="d-flex flex-wrap flex-grow-1">
-            <ChildContent>
-                <MudSimpleTable Style="overflow-x: auto;">
-                    <thead>
-                        <tr><th>Name</th></tr>
-                    </thead>
-                    <tbody>
-                        <MudDropZone T="Song" Identifier="name" Class="flex-grow-1" AllowReorder="true" />
-                    </tbody>
-                </MudSimpleTable>
-            </ChildContent>
-            <ItemRenderer>
-                <tr>
-                    
-                        <td>@((string)context.name)</td>
-                    
-                </tr>
-            </ItemRenderer>
-        </MudDropContainer>
-
-
-
+    {   
+        <MudTimeline TimelinePosition="TimelinePosition.Left">
+            <MudTimelineItem>
+                <ItemDot>
+                    <MudIconButton Icon="@Icons.Material.Filled.AddCircle" Title="Add" Color="Color.Success" OnClick="(() => AddSong(0))" />
+                </ItemDot>
+            </MudTimelineItem>
+        @for(int i = 0; i < searchTerms.Count(); i++)
+            {
+                int x = i;
+                <MudTimelineItem>
+                    <ItemDot>
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="(() => DeleteSong(x))"/>
+                    </ItemDot>
+                    <ItemContent>
+                        <MudPaper>
+                            <MudTextField Text="@searchTerms[x]" T="string" Label="Search Term" />
+                        </MudPaper>
+                    </ItemContent>
+                </MudTimelineItem>
+                <MudTimelineItem>
+                    <ItemDot>
+                        <MudIconButton Icon="@Icons.Material.Filled.AddCircle" Title="Add" Color="Color.Success" OnClick="(() => AddSong(x))"/>
+                    </ItemDot>
+                </MudTimelineItem>
+            }
+        </MudTimeline>
     }
 </MudContainer>
-
-
-@* <MudDropContainer T="DropItem" Items="_items" ItemsSelector="@((item,dropzone) => item.Identifier == dropzone)" ItemDropped="ItemUpdated" Class="d-flex flex-wrap flex-grow-1">
-    <ChildContent>
-        <MudDropZone T="DropItem" Identifier="Drop Zone 1" Class="rounded mud-background-gray pa-6 ma-8 flex-grow-1">
-            <MudText Typo="Typo.h6" Class="mb-4">Drop Zone 1</MudText>
-        </MudDropZone>
-        <MudDropZone T="DropItem" Identifier="Drop Zone 2" Class="rounded mud-background-gray pa-6 ma-8 flex-grow-1">
-            <MudText Typo="Typo.h6" Class="mb-4">Drop Zone 2</MudText>
-        </MudDropZone>
-    </ChildContent>
-    <ItemRenderer>
-        <MudPaper Elevation="25" Class="pa-4 my-4">@context.Name</MudPaper>
-    </ItemRenderer>
-</MudDropContainer> *@
 
 @code {
     [Parameter]
     public string setlistId { get; set; } = string.Empty;
     private Root? eventData { get; set; }
+    private List<string> searchTerms { get; set; } = new();
 
-    private IEnumerable<Song> _items
-    {
-        get
-        {
-            List<string> tempNames = new();
-            List<Song> tempSongs = new();
-
-            if(eventData is not null && eventData.sets.set.Any())
-            {
-                
-                
-                foreach(var set in eventData.sets.set)
-                {
-                    tempSongs.AddRange(set.song);
-                }
-                foreach(var n in tempSongs)
-                {
-                    tempNames.Add(n.name);
-                }
-            }
-            return tempSongs;
-        }
-    }
 
     protected override async Task OnInitializedAsync()
     {
+        //string tok = SpotifyAnonService.GetAuthToken().Result ?? string.Empty;
+        //Snackbar.Add(tok, Severity.Normal);
         Root? tempData = null;
 
         var request = new HttpRequestMessage(HttpMethod.Get, "https://api.setlist.fm/rest/1.0/setlist/" + setlistId);
-        request.Headers.Add("x-api-key", "Put an API key here");
+        request.Headers.Add("x-api-key", "RYHtJtNU_uUkmWT7Nr9b4yMIgb_PL9jjnzB3");
         request.Headers.Add("Accept", "application/json");
 
         var client = ClientFactory.CreateClient();
@@ -108,10 +70,27 @@
 
         eventData = tempData;
 
+        if (eventData is not null && eventData.sets.set.Any())
+        {
+
+            List<string> tempNames = new();
+            List<Song> tempSongs = new();
+            foreach (var set in eventData.sets.set)
+            {
+                tempSongs.AddRange(set.song);
+            }
+            searchTerms = tempSongs.Select(x => string.Format("{0} {1}", eventData.artist.name, x.name)).ToList();
+        }
+
     }
 
-    public void ItemUpdated()
+    public void AddSong(int index)
     {
-        
+        searchTerms.Insert(index > 0 ? index + 1 : 0, string.Empty);
+    }
+
+    public void DeleteSong(int index)
+    {
+        searchTerms.RemoveAt(index);
     }
 }

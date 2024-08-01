@@ -5,18 +5,12 @@
 @using System.Text.Json
 @using System.Text.Json.Serialization
 @inject IHttpClientFactory ClientFactory
+@inject NavigationManager NavManager
 
 <MudContainer Class="mt-6">
     <MudTextField @bind-Value="SetlistUrl" Label="URL" Variant="Variant.Outlined" Margin="Margin.Dense" />
     <MudTextField @bind-Value="SetlistId" Label="Id" Variant="Variant.Outlined" Margin="Margin.Dense" />
     <MudButton Variant="Variant.Filled" DropShadow="false" OnClick="SubmitUrl">Submit URL</MudButton>
-
-    @if (ShowSetlist)
-    {
-        <MudButton>WTF</MudButton>
-        <Setlist setlistId="@SetlistId" />
-    }
-
 </MudContainer>
 
 @code {
@@ -27,16 +21,17 @@
     private Root? eventData { get; set; }
     private string[] setlistIds = { "3ab0503" };
     //3ab0503
+    
 
     private void SubmitUrl()
     {
         SetlistId = setlistIds.Contains(SetlistUrl) ? SetlistUrl : ParseUrlForId();
-        ShowSetlist = true;
+        NavManager.NavigateTo("/editlist/" + SetlistId);
+
     }
 
     private string ParseUrlForId()
     {
         return SetlistUrl.Split("-").Last().Split(".").First();
-
     }
 }

@@ -2,6 +2,7 @@
 using ActualPlaylistBuilder.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Net.Http.Headers;
 
 namespace ActualPlaylistBuilder.Services
@@ -18,35 +19,67 @@ namespace ActualPlaylistBuilder.Services
             //TODO Do this better
             string ClientId = "";
             string ClientSecret = "";
-            return ClientId + ":" + ClientSecret;
+            return string.Format("{0}:{1}", ClientId, ClientSecret);
         }
     }
 
-    public interface ISpotifyAnonService
+    public interface ISpotifyAnonAuthService
     {
-        Task<string> GetAuthToken();
+        Task<string> GetAnonToken();
     }
-    public class SpotifyAnonService : ISpotifyAnonService
+    public class SpotifyAnonAuthService : ISpotifyAnonAuthService
     {
         private readonly ISpotifyAppCredentials _credentials;
-        public SpotifyAnonService(ISpotifyAppCredentials spotifyAppCredentials)
+        private AnonToken? _token = null;
+        private DateTime? TokenExpire = null;
+        public SpotifyAnonAuthService(ISpotifyAppCredentials spotifyAppCredentials)
         {
             _credentials = spotifyAppCredentials;
         }
-        public async Task<string> GetAuthToken()
+        public async Task<string> GetAnonToken()
         {
-            
-
-            using (var httpClient = new HttpClient())
+            string retVal = string.Empty;
+            if (_token is not null && TokenExpire.HasValue && TokenExpire.Value > DateTime.Now)
             {
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", _credentials.GetHeaderValue());
+                retVal = _token.access_token;
+            }
+            else
+            {
+                await SetAnonToken();
+                retVal = GetAnonToken().Result;
+            }
+            return retVal;
+        }
+
+        private async Task SetAnonToken()
+        {
+            try
+            {
+                var httpClient = new HttpClient();
+                httpClient.DefaultRequestHeaders.Accept.Clear();
                 httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                var response = await httpClient.PostAsJsonAsync("https://accounts.spotify.com/api/token", new GrantType());
+
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(_credentials.GetHeaderValue())));
+
+                List<KeyValuePair<string, string>> requestData = new List<KeyValuePair<string, string>>();
+                requestData.Add(new KeyValuePair<string, string>("grant_type", "client_credentials"));
+
+                FormUrlEncodedContent requestBody = new FormUrlEncodedContent(requestData);
+
+                var response = httpClient.PostAsync("https://accounts.spotify.com/api/token", requestBody).Result;
 
                 var responseContent = await response.Content.ReadAsStringAsync();
-                return responseContent;
+                AnonToken? tempToken = JsonConvert.DeserializeObject<AnonToken>(responseContent);
+                if (tempToken != null)
+                {
+                    _token = tempToken;
+                    TokenExpire = DateTime.Now.AddSeconds(_token.expires_in - 30);
+                }
             }
-            return string.Empty;
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
     }
 }

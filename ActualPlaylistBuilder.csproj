@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Components\Pages\AcceptToken.razor" />
     <Content Remove="Components\Pages\Setlist.razor" />
     <Content Remove="Components\Pages\wtf.razor" />
   </ItemGroup>
@@ -31,18 +32,25 @@
 
 
   <ItemGroup>
+    <_ContentIncludedByDefault Remove="Components\Pages\AcceptToken.razor" />
     <_ContentIncludedByDefault Remove="Components\Pages\Setlist.razor" />
     <_ContentIncludedByDefault Remove="Components\Pages\wtf.razor" />
   </ItemGroup>
 
 
   <ItemGroup>
-    <None Include="Components\Pages\Wtf.razor" />
+    <None Include="Components\Shared\AcceptToken.razor" />
+    <None Include="Components\Shared\Wtf.razor" />
     <None Include="Components\Shared\Setlist.razor" />
   </ItemGroup>
 
 
   <ItemGroup>
     <UpToDateCheckInput Remove="Components\Pages\wtf.razor" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Components\Pages\AcceptToken.razor" />
   </ItemGroup>
 </Project>

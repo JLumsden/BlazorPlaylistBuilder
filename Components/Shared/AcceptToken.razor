@@ -1,0 +1,10 @@
+﻿@page "/token/{aToken}"
+
+<MudContainer>
+<h3>@aToken</h3>
+</MudContainer>
+
+@code {
+    [Parameter]
+    public string aToken { get; set; } = string.Empty;
+}

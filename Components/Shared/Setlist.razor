@@ -2,19 +2,27 @@
 @using ActualPlaylistBuilder.Models
 @using System.Text.Json
 @using System.Text.Json.Serialization
-@using ActualPlaylistBuilder.Services
+
 
 @inject IHttpClientFactory ClientFactory
 @inject ISnackbar Snackbar
-@inject ISpotifyAnonService SpotifyAnonService
+@inject ISpotifyAnonAuthService SpotifyAnonAuthService
+@inject ISetlistService SetlistService
+@inject NavigationManager NavManager
 
-<MudContainer>
+<MudLayout>
     @if (eventData is not null)
-    {   
-        <MudTimeline TimelinePosition="TimelinePosition.Left">
+    {
+        <MudAppBar Fixed="false" Class="fixed">
+                <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Class="mr-5" />
+                <MudIconButton Icon="@Icons.Material.Outlined.Add" OnClick="OnSubmit"/>
+            
+        </MudAppBar>
+        
+        <MudTimeline TimelinePosition="TimelinePosition.Left" Class="">
             <MudTimelineItem>
                 <ItemDot>
-                    <MudIconButton Icon="@Icons.Material.Filled.AddCircle" Title="Add" Color="Color.Success" OnClick="(() => AddSong(0))" />
+                    <MudIconButton Icon="@Icons.Material.Filled.AddCircle" Title="Add" Color="Color.Success" OnClick="(() => AddSong(-1))" />
                 </ItemDot>
             </MudTimelineItem>
         @for(int i = 0; i < searchTerms.Count(); i++)
@@ -26,7 +34,7 @@
                     </ItemDot>
                     <ItemContent>
                         <MudPaper>
-                            <MudTextField Text="@searchTerms[x]" T="string" Label="Search Term" />
+                            <MudTextField @bind-Value="searchTerms[x]" T="string" Label="Search Term" />
                         </MudPaper>
                     </ItemContent>
                 </MudTimelineItem>
@@ -38,7 +46,7 @@
             }
         </MudTimeline>
     }
-</MudContainer>
+</MudLayout>
 
 @code {
     [Parameter]
@@ -54,7 +62,7 @@
         Root? tempData = null;
 
         var request = new HttpRequestMessage(HttpMethod.Get, "https://api.setlist.fm/rest/1.0/setlist/" + setlistId);
-        request.Headers.Add("x-api-key", "RYHtJtNU_uUkmWT7Nr9b4yMIgb_PL9jjnzB3");
+        request.Headers.Add("x-api-key", "");
         request.Headers.Add("Accept", "application/json");
 
         var client = ClientFactory.CreateClient();
@@ -84,9 +92,15 @@
 
     }
 
+    public void OnSubmit()
+    {
+        SetlistService.SetSearchList(searchTerms);
+        NavManager.NavigateTo("/editspotifylist/" + setlistId);
+    }
+
     public void AddSong(int index)
     {
-        searchTerms.Insert(index > 0 ? index + 1 : 0, string.Empty);
+        searchTerms.Insert(index >= 0 ? index + 1 : 0, string.Empty);
     }
 
     public void DeleteSong(int index)

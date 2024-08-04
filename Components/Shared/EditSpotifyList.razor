@@ -1,0 +1,77 @@
+﻿@page "/editspotifylist/{setlistId}"
+@using ActualPlaylistBuilder.Models.TrackSearch
+
+@inject ISetlistService SetlistService
+@inject ISpotifySearchService SpotifySearchService
+
+@* @foreach(var item in searchTerms)
+{
+    <MudPaper>@item</MudPaper>
+} *@
+
+
+<MudExpansionPanels>
+    @foreach (var track in giggities)
+    {
+
+        @if (track.Tracks.Items is not null && track.Tracks.Items.Any())
+        {
+            <MudExpansionPanel>
+                <TitleContent>
+                    <iframe style="border-radius:12px" src="@(string.Format("https://open.spotify.com/embed/track/{0}?utm_source=generator", track.Tracks.Items[0].Id))" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                </TitleContent>
+                <ChildContent>
+                    <MudTable Items="@track.Tracks.Items">
+                        <RowTemplate>
+                            <MudToolBar Class="ma-2 overflow-auto">
+                            <MudIconButton Icon="@Icons.Material.Filled.SwapVert" Color="Color.Success" />
+                            <iframe style="border-radius:12px" src="@(string.Format("https://open.spotify.com/embed/track/{0}?utm_source=generator", context.Id))" width="100%" height="200" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                            </MudToolBar>
+                        </RowTemplate>
+                        <PagerContent>
+                            <MudTablePager PageSizeOptions="new int[] { 5, 10}"/>
+                            
+                        </PagerContent>
+                    </MudTable>
+                </ChildContent>
+            </MudExpansionPanel>
+            
+        }
+
+    }
+</MudExpansionPanels>
+
+@code {
+    [Parameter]
+    public string setlistId { get; set; }
+    public List<string> searchTerms { get; set; }
+    public List<Models.TrackSearch.Root> giggities { get; set; } = new();
+    public string bloop { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        searchTerms = SetlistService.GetSearchList();
+
+        await GetTrack("Periphery Chvrch Bvrner");
+
+         // foreach(var term in searchTerms)
+         // {
+         //     await GetTrack(term);
+         // }
+    }
+
+    private async Task GetTrack(string term)
+    {
+        Models.TrackSearch.Root? tempVal;
+        tempVal = await SpotifySearchService.GetTrack(term);
+        if (tempVal is not null)
+        {
+            giggities.Add(tempVal);
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine(term + " failed");
+        }
+    }
+}

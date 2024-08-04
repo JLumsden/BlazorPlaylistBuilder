@@ -6,32 +6,35 @@
 @using System.Text.Json.Serialization
 @inject IHttpClientFactory ClientFactory
 @inject NavigationManager NavManager
+@inject ISpotifyAnonAuthService SpotifyAnonAuthService
 
 <MudContainer Class="mt-6">
     <MudTextField @bind-Value="SetlistUrl" Label="URL" Variant="Variant.Outlined" Margin="Margin.Dense" />
     <MudTextField @bind-Value="SetlistId" Label="Id" Variant="Variant.Outlined" Margin="Margin.Dense" />
     <MudButton Variant="Variant.Filled" DropShadow="false" OnClick="SubmitUrl">Submit URL</MudButton>
+    
 </MudContainer>
 
 @code {
-    private string SetlistUrl { get; set; } = string.Empty;
-    private string SetlistId { get; set; } = string.Empty;
+    private string SetlistUrl { get; set; } = "3ab0503";
+    private string SetlistId { get; set; } = "3ab0503";
     private bool ShowSetlist { get; set; } = false;
 
     private Root? eventData { get; set; }
     private string[] setlistIds = { "3ab0503" };
     //3ab0503
-    
+
 
     private void SubmitUrl()
     {
         SetlistId = setlistIds.Contains(SetlistUrl) ? SetlistUrl : ParseUrlForId();
         NavManager.NavigateTo("/editlist/" + SetlistId);
+        Console.WriteLine("Token + date = " + SpotifyAnonAuthService.GetAnonToken().Result);
 
     }
 
     private string ParseUrlForId()
     {
-        return SetlistUrl.Split("-").Last().Split(".").First();
+        return SetlistUrl.Split("-").Last().Split(".").First() ?? SetlistId;
     }
 }

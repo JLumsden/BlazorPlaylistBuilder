@@ -12,7 +12,17 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<ISpotifyAppCredentials, SpotifyAppCredentials>();
-builder.Services.AddSingleton<ISpotifyAnonService, SpotifyAnonService>();
+builder.Services.AddScoped<ISpotifyAnonAuthService, SpotifyAnonAuthService>();
+builder.Services.AddScoped<ISpotifySearchService, SpotifySearchService>();
+builder.Services.AddScoped<ISetlistService, SetlistService>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("NewPolicy", builder =>
+    builder.AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader());
+});
 
 var app = builder.Build();
 
@@ -28,6 +38,10 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
+
+//app.UseRouting();
+app.UseCors("NewPolicy");
+//app.UseAuthorization();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

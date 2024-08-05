@@ -98,6 +98,10 @@ StyleCopReport.xml
 *.svclog
 *.scc
 
+# appsettings
+appsettings*
+**/appsettings*
+
 # Chutzpah Test files
 _Chutzpah*
 

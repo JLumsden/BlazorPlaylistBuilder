@@ -15,6 +15,7 @@ builder.Services.AddSingleton<ISpotifyAppCredentials, SpotifyAppCredentials>();
 builder.Services.AddScoped<ISpotifyAnonAuthService, SpotifyAnonAuthService>();
 builder.Services.AddScoped<ISpotifySearchService, SpotifySearchService>();
 builder.Services.AddScoped<ISetlistService, SetlistService>();
+builder.Services.AddScoped<ISpotifyAuthService, SpotifyAuthService>();
 
 builder.Services.AddCors(options =>
 {

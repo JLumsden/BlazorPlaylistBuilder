@@ -10,21 +10,29 @@ namespace ActualPlaylistBuilder.Services
     public interface ISpotifyAppCredentials
     {
         string GetHeaderValue();
+        string GetClientId();
     }
 
     public class SpotifyAppCredentials : ISpotifyAppCredentials
     {
+        private readonly string ClientId;
+        private readonly string ClientSecret;
         private readonly IConfiguration _configuration;
         public SpotifyAppCredentials(IConfiguration configuration)
         {
             _configuration = configuration;
+            ClientId = _configuration["client_id"];
+            ClientSecret = _configuration["client_secret"];
         }
         public string GetHeaderValue()
         {
             //TODO Do this better
-            string ClientId = _configuration["client_id"];
-            string ClientSecret = _configuration["client_secret"];
+            
             return string.Format("{0}:{1}", ClientId, ClientSecret);
+        }
+        public string GetClientId()
+        {
+            return ClientId; 
         }
     }
 

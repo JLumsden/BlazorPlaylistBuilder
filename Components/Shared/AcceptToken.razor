@@ -1,10 +1,22 @@
-﻿@page "/token/{aToken}"
+﻿@page "/token"
 
 <MudContainer>
-<h3>@aToken</h3>
+<h3>@(code)</h3>
 </MudContainer>
 
 @code {
+    [SupplyParameterFromQuery]
     [Parameter]
-    public string aToken { get; set; } = string.Empty;
+    public string? code { get; set; }
+    [SupplyParameterFromQuery]
+    [Parameter]
+    public string? error { get; set; }
+    [Inject]
+    ISpotifyAuthService spotifyAuthService { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await spotifyAuthService.CreatePlaylist(code);
+    }
+
 }

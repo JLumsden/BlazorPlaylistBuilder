@@ -8,7 +8,11 @@
 {
     <MudPaper>@item</MudPaper>
 } *@
-
+<MudToolBar Fixed="true" Color="Color.Primary" Elevation="1">
+    <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" />
+    <MudSpacer />
+    <MudIconButton Icon="@Icons.Material.Filled.Check" Color="Color.Success" Edge="Edge.End" OnClick="SubmitToAuth"/>
+</MudToolBar>
 
 <MudExpansionPanels>
     @foreach (var track in giggities)
@@ -39,6 +43,7 @@
         }
 
     }
+    
 </MudExpansionPanels>
 
 @code {
@@ -47,6 +52,8 @@
     public List<string> searchTerms { get; set; }
     public List<Models.TrackSearch.Root> giggities { get; set; } = new();
     public string bloop { get; set; }
+    [Inject]
+    private ISpotifyAuthService spotifyAuthService { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -54,10 +61,10 @@
 
         await GetTrack("Periphery Chvrch Bvrner");
 
-         // foreach(var term in searchTerms)
-         // {
-         //     await GetTrack(term);
-         // }
+        // foreach(var term in searchTerms)
+        // {
+        //     await GetTrack(term);
+        // }
     }
 
     private async Task GetTrack(string term)
@@ -73,5 +80,10 @@
         {
             Console.WriteLine(term + " failed");
         }
+    }
+
+    public void SubmitToAuth()
+    {
+        spotifyAuthService.StartAuth();
     }
 }

@@ -2,20 +2,20 @@
 
 <MudContainer>
 <h3>@(code)</h3>
+    <MudIconButton Icon="@Icons.Material.Filled.Check" Color="Color.Success" Edge="Edge.End" OnClick="SubmitToAuth" />
 </MudContainer>
 
 @code {
     [SupplyParameterFromQuery]
-    [Parameter]
     public string? code { get; set; }
     [SupplyParameterFromQuery]
-    [Parameter]
     public string? error { get; set; }
     [Inject]
     ISpotifyAuthService spotifyAuthService { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    public async Task SubmitToAuth()
     {
+        Console.WriteLine("CreatePlaylist");
         await spotifyAuthService.CreatePlaylist(code);
     }
 

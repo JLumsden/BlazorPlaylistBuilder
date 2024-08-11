@@ -58,7 +58,7 @@
     protected override async Task OnInitializedAsync()
     {
         searchTerms = SetlistService.GetSearchList();
-
+        Console.WriteLine("GetTrack");
         await GetTrack("Periphery Chvrch Bvrner");
 
         // foreach(var term in searchTerms)

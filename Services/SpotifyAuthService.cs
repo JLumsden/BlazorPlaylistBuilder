@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.WebUtilities;
+using System;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
@@ -27,6 +28,7 @@ namespace ActualPlaylistBuilder.Services
             _credentials = spotifyAppCredentials;
             _navigationManager = navigationManager;
             CodeChallenge = GenerateNonce();
+            Console.WriteLine("At constructor: " + CodeChallenge);
             HashedChallenge = QuickHash(CodeChallenge);
             httpClient = new HttpClient();
         }
@@ -44,7 +46,7 @@ namespace ActualPlaylistBuilder.Services
             return new string(nonce);
         }
 
-        string QuickHash(string codeVerifier)
+        private string QuickHash(string codeVerifier)
         {
             using var sha256 = SHA256.Create();
             var hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(codeVerifier));
@@ -64,7 +66,9 @@ namespace ActualPlaylistBuilder.Services
             queryString.Add("scope", "playlist-modify-public");
             queryString.Add("code_challenge_method", "S256");
             queryString.Add("code_challenge", HashedChallenge);
-            
+
+            Console.WriteLine("At auth: " + CodeChallenge);
+
 
             _navigationManager.NavigateTo($"https://accounts.spotify.com/authorize?{queryString}");
         }
@@ -82,6 +86,7 @@ namespace ActualPlaylistBuilder.Services
             //httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(_credentials.GetHeaderValue())));
 
             httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
 
             List<KeyValuePair<string, string>> requestData = new List<KeyValuePair<string, string>>();
 
@@ -91,21 +96,21 @@ namespace ActualPlaylistBuilder.Services
             requestData.Add(new KeyValuePair<string, string>("redirect_uri", "https://localhost:7147/token"));
 
             requestData.Add(new KeyValuePair<string, string>("code_verifier", CodeChallenge));
+            Console.WriteLine("At token: " + CodeChallenge);
 
             var parameters = new Dictionary<string, string>
             {
                 {"client_id", _credentials.GetClientId()},
                 {"grant_type", "authorization_code"},
                 {"code", code},
-                {"redirect_uri", "https://localhost:7147"},
+                {"redirect_uri", "https://localhost:7147/token"},
                 {"code_verifier", CodeChallenge}
             };
 
-            FormUrlEncodedContent requestBody = new FormUrlEncodedContent(parameters);
-            var req = new HttpRequestMessage(HttpMethod.Post, "https://accounts.spotify.com/api/token") { Content = requestBody };
-            var response = await httpClient.SendAsync(req);
-
-            response.EnsureSuccessStatusCode();
+            using var client = new HttpClient();
+            using var req = new HttpRequestMessage(HttpMethod.Post, "https://accounts.spotify.com/api/token") { Content = new FormUrlEncodedContent(requestData) };
+            using var res = await client.SendAsync(req);
+            Console.WriteLine(res.Content.ReadAsStringAsync().Result);
         }
     }
 }

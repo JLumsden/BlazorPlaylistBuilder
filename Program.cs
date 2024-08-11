@@ -11,6 +11,7 @@ builder.Services.AddMudServices();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddHttpClient();
+builder.Services.AddControllers();
 builder.Services.AddSingleton<ISpotifyAppCredentials, SpotifyAppCredentials>();
 builder.Services.AddScoped<ISpotifyAnonAuthService, SpotifyAnonAuthService>();
 builder.Services.AddScoped<ISpotifySearchService, SpotifySearchService>();
@@ -43,7 +44,7 @@ app.UseAntiforgery();
 //app.UseRouting();
 app.UseCors("NewPolicy");
 //app.UseAuthorization();
-
+app.MapControllers();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 

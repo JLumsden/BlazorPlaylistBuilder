@@ -1,8 +1,15 @@
 ﻿@page "/token"
 
 <MudContainer>
-<h3>@(code)</h3>
-    <MudIconButton Icon="@Icons.Material.Filled.Check" Color="Color.Success" Edge="Edge.End" OnClick="SubmitToAuth" />
+    @if(!string.IsNullOrEmpty(error))
+    {
+        <MudText>Failed to Authenticate!</MudText>
+        <MudButton Color="Color.Success" OnClick="@(() => navigationManager.NavigateTo("/chooseservice"))">Try Again</MudButton>
+    }
+    else
+    {
+        <SubmitURL />
+    }
 </MudContainer>
 
 @code {
@@ -12,11 +19,13 @@
     public string? error { get; set; }
     [Inject]
     ISpotifyAuthService spotifyAuthService { get; set; }
+    [Inject]
+    NavigationManager navigationManager { get; set; }
+    public string message { get; set; } = string.Empty;
 
-    public async Task SubmitToAuth()
+    protected override async Task OnParametersSetAsync()
     {
-        Console.WriteLine("CreatePlaylist");
-        await spotifyAuthService.CreatePlaylist(code);
+        //Save the code here
     }
 
 }

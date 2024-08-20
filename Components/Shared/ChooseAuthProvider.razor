@@ -1,0 +1,13 @@
+﻿@page "/chooseservice"
+
+<MudButton Color="Color.Success" OnClick="SpotifyLogin">Login with Spotify</MudButton>
+
+@code {
+    [Inject]
+    private ISpotifyAuthService spotifyAuthService { get; set; }
+
+    private void SpotifyLogin()
+    {
+        spotifyAuthService.StartAuth();
+    }
+}

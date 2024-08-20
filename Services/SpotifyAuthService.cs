@@ -23,6 +23,7 @@ namespace ActualPlaylistBuilder.Services
         private readonly string CodeChallenge;
         private readonly string HashedChallenge;
         private HttpClient httpClient { get; set; }
+        
         public SpotifyAuthService(NavigationManager navigationManager, ISpotifyAppCredentials spotifyAppCredentials)
         {
             _credentials = spotifyAppCredentials;
@@ -64,10 +65,7 @@ namespace ActualPlaylistBuilder.Services
             queryString.Add("response_type", "code");
             queryString.Add("redirect_uri", "https://localhost:7147/token");
             queryString.Add("scope", "playlist-modify-public");
-            queryString.Add("code_challenge_method", "S256");
-            queryString.Add("code_challenge", HashedChallenge);
-
-            Console.WriteLine("At auth: " + CodeChallenge);
+            
 
 
             _navigationManager.NavigateTo($"https://accounts.spotify.com/authorize?{queryString}");
@@ -75,10 +73,10 @@ namespace ActualPlaylistBuilder.Services
 
         public async Task<string> CreatePlaylist(string code)
         {
-            await GetAccessToken(code);
-            return string.Empty;
+            return await GetAccessToken(code);
+            //return string.Empty;
         }
-        private async Task GetAccessToken(string code)
+        private async Task<string> GetAccessToken(string code)
         {
             //httpClient.DefaultRequestHeaders.Accept.Clear();
             //httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
@@ -86,16 +84,17 @@ namespace ActualPlaylistBuilder.Services
             //httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(_credentials.GetHeaderValue())));
 
             httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
+            //httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(_credentials.GetHeaderValue())));
 
             List<KeyValuePair<string, string>> requestData = new List<KeyValuePair<string, string>>();
 
-            requestData.Add(new KeyValuePair<string, string>("client_id", _credentials.GetClientId()));
+            //requestData.Add(new KeyValuePair<string, string>("client_id", _credentials.GetClientId()));
             requestData.Add(new KeyValuePair<string, string>("grant_type", "authorization_code"));
             requestData.Add(new KeyValuePair<string, string>("code", code));
             requestData.Add(new KeyValuePair<string, string>("redirect_uri", "https://localhost:7147/token"));
 
-            requestData.Add(new KeyValuePair<string, string>("code_verifier", CodeChallenge));
+            //requestData.Add(new KeyValuePair<string, string>("code_verifier", CodeChallenge));
             Console.WriteLine("At token: " + CodeChallenge);
 
             var parameters = new Dictionary<string, string>
@@ -109,8 +108,8 @@ namespace ActualPlaylistBuilder.Services
 
             using var client = new HttpClient();
             using var req = new HttpRequestMessage(HttpMethod.Post, "https://accounts.spotify.com/api/token") { Content = new FormUrlEncodedContent(requestData) };
-            using var res = await client.SendAsync(req);
-            Console.WriteLine(res.Content.ReadAsStringAsync().Result);
+            using var res = await httpClient.PostAsync("https://accounts.spotify.com/api/token", new FormUrlEncodedContent(requestData));
+            return res.Content.ReadAsStringAsync().Result;
         }
     }
 }

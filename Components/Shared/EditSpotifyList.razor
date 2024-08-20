@@ -10,6 +10,8 @@
 } *@
 <MudToolBar Fixed="true" Color="Color.Primary" Elevation="1">
     <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" />
+    <MudTextField Value="Name" HelperText="Playlist Name"/>
+    <MudTextField Value="Description" HelperText="Playlist Description"/>
     <MudSpacer />
     <MudIconButton Icon="@Icons.Material.Filled.Check" Color="Color.Success" Edge="Edge.End" OnClick="SubmitToAuth"/>
 </MudToolBar>
@@ -54,6 +56,8 @@
     public string bloop { get; set; }
     [Inject]
     private ISpotifyAuthService spotifyAuthService { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -84,6 +88,6 @@
 
     public void SubmitToAuth()
     {
-        spotifyAuthService.StartAuth();
+        Console.WriteLine("Creating Playlist!");
     }
 }

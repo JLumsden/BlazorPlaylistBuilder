@@ -46,6 +46,10 @@
             }
         </MudTimeline>
     }
+    @if(!string.IsNullOrEmpty(message))
+    {
+        <MudText>@message</MudText>
+    }
 </MudLayout>
 
 @code {
@@ -55,6 +59,7 @@
     private List<string> searchTerms { get; set; } = new();
     [Inject]
     private IConfiguration _configuration { get; set; }
+    private string message { get; set; } = string.Empty;
 
 
     protected override async Task OnInitializedAsync()
@@ -73,10 +78,15 @@
 
         if (response.IsSuccessStatusCode)
         {
-            using var responseStream = await response.Content.ReadAsStreamAsync();
+            using var responseStream = await response.Content.ReadAsStreamAsync(); 
             tempData = await JsonSerializer.DeserializeAsync
                 <Root>(responseStream);
         }
+        else
+        {
+            message = "Setlist.FM is currently experiencing server issues!";
+        }
+
 
         eventData = tempData;
 

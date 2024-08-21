@@ -26,6 +26,10 @@
     protected override async Task OnParametersSetAsync()
     {
         //Save the code here
+        if (string.IsNullOrEmpty(error) && !string.IsNullOrEmpty(code))
+        {
+            spotifyAuthService.SetCode(code);
+        }
     }
 
 }

@@ -1,4 +1,5 @@
 ﻿@page "/editspotifylist/{setlistId}"
+@using ActualPlaylistBuilder.Models
 @using ActualPlaylistBuilder.Models.TrackSearch
 
 @inject ISetlistService SetlistService
@@ -10,11 +11,16 @@
 } *@
 <MudToolBar Fixed="true" Color="Color.Primary" Elevation="1">
     <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" />
-    <MudTextField Value="Name" HelperText="Playlist Name"/>
-    <MudTextField Value="Description" HelperText="Playlist Description"/>
+    <MudTextField @bind-Value="playlistDetails.name" HelperText="Playlist Name"/>
+    <MudTextField @bind-Value="playlistDetails.description" HelperText="Playlist Description"/>
     <MudSpacer />
-    <MudIconButton Icon="@Icons.Material.Filled.Check" Color="Color.Success" Edge="Edge.End" OnClick="SubmitToAuth"/>
+    <MudIconButton Icon="@Icons.Material.Filled.Check" Color="Color.Success" Edge="Edge.End" OnClick="SubmitPlaylist"/>
 </MudToolBar>
+
+@if(!string.IsNullOrEmpty(playlistUri))
+{
+    <MudText>@playlistUri</MudText>
+}
 
 <MudExpansionPanels>
     @foreach (var track in giggities)
@@ -58,12 +64,15 @@
     private ISpotifyAuthService spotifyAuthService { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
+    public PlaylistDetails playlistDetails { get; set; } = new();
+    public string playlistUri { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         searchTerms = SetlistService.GetSearchList();
         Console.WriteLine("GetTrack");
         await GetTrack("Periphery Chvrch Bvrner");
+        await GetTrack("Periphery Reptile");
 
         // foreach(var term in searchTerms)
         // {
@@ -86,8 +95,8 @@
         }
     }
 
-    public void SubmitToAuth()
+    public async Task SubmitPlaylist()
     {
-        Console.WriteLine("Creating Playlist!");
+        playlistUri = await spotifyAuthService.OrchestratePlaylist(playlistDetails, giggities.Select(g => g.Tracks).Select(t => t.Items[0].Uri).ToList());
     }
 }

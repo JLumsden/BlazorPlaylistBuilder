@@ -61,7 +61,7 @@ namespace ActualPlaylistBuilder.Services
             _token = await GetAccessToken(code);
             if(_token is not null) spotifyUser = await GetSpotifyUser();
             if(spotifyUser is not null) createdPlaylist = await CreatePlaylist(spotifyUser.Id, playlistDetails);
-            if(createdPlaylist is not null) await PopulatePlaylist(playlistId, songUris);
+            if(createdPlaylist is not null) await PopulatePlaylist(createdPlaylist.Id, songUris);
             return createdPlaylist.Uri;
 
             //return string.Empty;
@@ -159,24 +159,17 @@ namespace ActualPlaylistBuilder.Services
             {
                 var httpClient = new HttpClient();
                 httpClient.DefaultRequestHeaders.Accept.Clear();
-                //httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token.access_token);
 
-                Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
-                keyValuePairs.Add("uris", JsonConvert.SerializeObject(songUris));
-                List<KeyValuePair<string, string>> requestData = new();
-                requestData.Add(new KeyValuePair<string, string>("uris", string.Join(",", songUris)));
-
-                FormUrlEncodedContent requestBody = new FormUrlEncodedContent(requestData);
-                var content = new StringContent(songUris.ToString(), Encoding.UTF8, "application/json");
 
                 PlaylistUris playlistUris = new PlaylistUris
                 {
                     uris = songUris
                 };
 
-                var response = await httpClient.PostAsync($"https://api.spotify.com/v1/playlists/{playlistId}/tracks", requestBody);
+                var response = await httpClient.PostAsJsonAsync($"https://api.spotify.com/v1/playlists/{playlistId}/tracks", playlistUris);
                 return response.IsSuccessStatusCode;
                 
 

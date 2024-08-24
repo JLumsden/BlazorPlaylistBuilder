@@ -1,0 +1,28 @@
+﻿@using ActualPlaylistBuilder.Models.TrackSearch
+
+<MudPaper Height="200px" Width="200px">
+    <MudCard>
+        @if(Song.Album.Images.Any())
+        {
+        <MudCardMedia Image="@Song.Album.Images.Where(i => i.Height >= 200 && i.Height <= 400).First().Url" Height="200"/>
+        }
+        <MudCardContent>
+            <MudText>@Song.Name</MudText>
+            <MudDivider />
+            <MudText>@Song.Album.Name</MudText>
+            <MudDivider />
+            <MudText>@(String.Join(" | ", Song.Artists.Select(a => a.Name).ToList()))</MudText>
+        </MudCardContent>
+        <MudCardActions>
+            <MudIconButton Icon="@Icons.Material.Filled.SwapVert" Color="Color.Success" />
+            <MudSpacer />
+            <MudIconButton Icon="@Icons.Material.Filled.PlayArrow" Color="Color.Success" />
+        </MudCardActions>
+    </MudCard>
+</MudPaper>
+
+@code {
+    [Parameter]
+    public Item? Song { get; set; }
+    public bool HasImage { get; set; } = false;
+}

@@ -11,13 +11,14 @@
 @inject NavigationManager NavManager
 
 <MudLayout>
+    <MudAppBar Fixed="false" Class="fixed">
+        <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Class="mr-5" />
+        <MudIconButton Icon="@Icons.Material.Outlined.Add" OnClick="OnSubmit" />
+
+    </MudAppBar>
     @if (eventData is not null)
     {
-        <MudAppBar Fixed="false" Class="fixed">
-                <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Class="mr-5" />
-                <MudIconButton Icon="@Icons.Material.Outlined.Add" OnClick="OnSubmit"/>
-            
-        </MudAppBar>
+        
         
         <MudTimeline TimelinePosition="TimelinePosition.Left" Class="">
             <MudTimelineItem>
@@ -74,18 +75,18 @@
 
         var client = ClientFactory.CreateClient();
 
-        var response = await client.SendAsync(request);
+        //var response = await client.SendAsync(request);
 
-        if (response.IsSuccessStatusCode)
-        {
-            using var responseStream = await response.Content.ReadAsStreamAsync(); 
-            tempData = await JsonSerializer.DeserializeAsync
-                <Root>(responseStream);
-        }
-        else
-        {
-            message = "Setlist.FM is currently experiencing server issues!";
-        }
+        // if (response.IsSuccessStatusCode)
+        // {
+        //     using var responseStream = await response.Content.ReadAsStreamAsync(); 
+        //     tempData = await JsonSerializer.DeserializeAsync
+        //         <Root>(responseStream);
+        // }
+        // else
+        // {
+        //     message = "Setlist.FM is currently experiencing server issues!";
+        // }
 
 
         eventData = tempData;

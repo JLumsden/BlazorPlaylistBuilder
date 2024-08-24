@@ -5,65 +5,65 @@ namespace ActualPlaylistBuilder.Models.TrackSearch
     // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
     public class Album
     {
-        [JsonProperty("album_type", NullValueHandling = NullValueHandling.Ignore)]
-        public string AlbumType;
+        //[JsonProperty("album_type", NullValueHandling = NullValueHandling.Ignore)]
+        //public string AlbumType;
 
-        [JsonProperty("artists", NullValueHandling = NullValueHandling.Ignore)]
-        public List<Artist> Artists;
+        //[JsonProperty("artists", NullValueHandling = NullValueHandling.Ignore)]
+        //public List<Artist> Artists;
 
-        [JsonProperty("external_urls", NullValueHandling = NullValueHandling.Ignore)]
-        public ExternalUrls ExternalUrls;
+        //[JsonProperty("external_urls", NullValueHandling = NullValueHandling.Ignore)]
+        //public ExternalUrls ExternalUrls;
 
-        [JsonProperty("href", NullValueHandling = NullValueHandling.Ignore)]
-        public string Href;
+        //[JsonProperty("href", NullValueHandling = NullValueHandling.Ignore)]
+        //public string Href;
 
-        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
-        public string Id;
+        //[JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        //public string Id;
 
         [JsonProperty("images", NullValueHandling = NullValueHandling.Ignore)]
-        public List<Image> Images;
+        public List<Image> Images { get; set; }
 
-        [JsonProperty("is_playable", NullValueHandling = NullValueHandling.Ignore)]
-        public bool? IsPlayable;
+        //[JsonProperty("is_playable", NullValueHandling = NullValueHandling.Ignore)]
+        //public bool? IsPlayable;
 
         [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
-        public string Name;
+        public string Name { get; set; }
 
-        [JsonProperty("release_date", NullValueHandling = NullValueHandling.Ignore)]
-        public string ReleaseDate;
+        //[JsonProperty("release_date", NullValueHandling = NullValueHandling.Ignore)]
+        //public string ReleaseDate;
 
-        [JsonProperty("release_date_precision", NullValueHandling = NullValueHandling.Ignore)]
-        public string ReleaseDatePrecision;
+        //[JsonProperty("release_date_precision", NullValueHandling = NullValueHandling.Ignore)]
+        //public string ReleaseDatePrecision;
 
-        [JsonProperty("total_tracks", NullValueHandling = NullValueHandling.Ignore)]
-        public int? TotalTracks;
+        //[JsonProperty("total_tracks", NullValueHandling = NullValueHandling.Ignore)]
+        //public int? TotalTracks;
 
-        [JsonProperty("type", NullValueHandling = NullValueHandling.Ignore)]
-        public string Type;
+        //[JsonProperty("type", NullValueHandling = NullValueHandling.Ignore)]
+        //public string Type;
 
-        [JsonProperty("uri", NullValueHandling = NullValueHandling.Ignore)]
-        public string Uri;
+        //[JsonProperty("uri", NullValueHandling = NullValueHandling.Ignore)]
+        //public string Uri;
     }
 
     public class Artist
     {
-        [JsonProperty("external_urls", NullValueHandling = NullValueHandling.Ignore)]
-        public ExternalUrls ExternalUrls;
+        //[JsonProperty("external_urls", NullValueHandling = NullValueHandling.Ignore)]
+        //public ExternalUrls ExternalUrls;
 
-        [JsonProperty("href", NullValueHandling = NullValueHandling.Ignore)]
-        public string Href;
+        //[JsonProperty("href", NullValueHandling = NullValueHandling.Ignore)]
+        //public string Href;
 
-        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
-        public string Id;
+        //[JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        //public string Id;
 
         [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
-        public string Name;
+        public string Name { get; set; }
 
-        [JsonProperty("type", NullValueHandling = NullValueHandling.Ignore)]
-        public string Type;
+        //[JsonProperty("type", NullValueHandling = NullValueHandling.Ignore)]
+        //public string Type;
 
-        [JsonProperty("uri", NullValueHandling = NullValueHandling.Ignore)]
-        public string Uri;
+        //[JsonProperty("uri", NullValueHandling = NullValueHandling.Ignore)]
+        //public string Uri;
     }
 
     public class ExternalIds
@@ -81,21 +81,25 @@ namespace ActualPlaylistBuilder.Models.TrackSearch
     public class Image
     {
         [JsonProperty("height", NullValueHandling = NullValueHandling.Ignore)]
-        public int? Height;
+        public int? Height { get; set; }
 
         [JsonProperty("url", NullValueHandling = NullValueHandling.Ignore)]
-        public string Url;
+        public string Url {get; set;}
 
         [JsonProperty("width", NullValueHandling = NullValueHandling.Ignore)]
-        public int? Width;
+        public int? Width {get; set;}
     }
 
     public class Item
     {
 
-        
 
-        
+        [JsonProperty("album", NullValueHandling = NullValueHandling.Ignore)]
+        public Album Album { get; set; }
+
+        [JsonProperty("artists", NullValueHandling = NullValueHandling.Ignore)]
+        public List<Artist> Artists { get; set; }
+
 
         [JsonProperty("href", NullValueHandling = NullValueHandling.Ignore)]
         public string Href { get; set; }
@@ -127,7 +131,7 @@ namespace ActualPlaylistBuilder.Models.TrackSearch
         public string Uri { get; set; }
     }
 
-    public class Root
+    public class SongSearch
     {
         [JsonProperty("tracks", NullValueHandling = NullValueHandling.Ignore)]
         public Tracks Tracks {  get; set; }

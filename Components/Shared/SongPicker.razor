@@ -1,0 +1,30 @@
+﻿@using ActualPlaylistBuilder.Models.TrackSearch
+
+<MudCarousel ItemsSource="_items" TData="Item[]" ShowArrows="true" ShowBullets="true" AutoCycle="false" Style="height: 500px;">
+    <ItemTemplate>
+        <div class="d-flex flex-row justify-content-center">
+            @foreach (var song in context)
+            {
+                <div class="mx-3 my-1">
+                    <SongCard Song="song" />
+                </div>
+            }
+        </div>
+        
+        
+    </ItemTemplate>
+</MudCarousel>
+
+@code {
+    [Parameter]
+    public List<Item> Items { get; set; }
+    private IEnumerable<Item[]> _items { get; set; }
+    const int PAGE_SIZE = 5;
+
+    protected override Task OnParametersSetAsync()
+    {
+        _items = Items.Chunk(PAGE_SIZE);
+
+        return base.OnParametersSetAsync();
+    }
+}

@@ -1,23 +1,33 @@
 ﻿@using ActualPlaylistBuilder.Models.TrackSearch
 
-<MudCarousel ItemsSource="_items" TData="Item[]" ShowArrows="true" ShowBullets="true" AutoCycle="false" Style="height: 500px;">
-    <ItemTemplate>
-        <div class="d-flex flex-row justify-content-center">
-            @foreach (var song in context)
-            {
-                <div class="mx-3 my-1">
-                    <SongCard Song="song" />
-                </div>
-            }
-        </div>
-        
-        
-    </ItemTemplate>
-</MudCarousel>
+
+        <SongCard Song="@ChosenSong" IsSelected="true" ShowEdit="@(b => {showEdit = b;})" />
+        @if (showEdit)
+        {
+            
+            <SongCarousel Items="@Items" OnChoose="@(s => {OnChoose.InvokeAsync(s);})" />
+            
+        }
+
+    @* <MudExpansionPanels>
+    <MudExpansionPanel>
+    <TitleContent>
+
+    </TitleContent>
+    <ChildContent>
+    <SongPicker Items="@track.Tracks.Items" />
+    </ChildContent>
+    </MudExpansionPanel>
+    </MudExpansionPanels> *@
+
 
 @code {
     [Parameter]
     public List<Item> Items { get; set; }
+    [Parameter]
+    public Item ChosenSong { get; set; }
+    [Parameter] public EventCallback<Item> OnChoose { get; set; }
+    private bool showEdit {get; set;} = false;
     private IEnumerable<Item[]> _items { get; set; }
     const int PAGE_SIZE = 5;
 
@@ -26,5 +36,10 @@
         _items = Items.Chunk(PAGE_SIZE);
 
         return base.OnParametersSetAsync();
+    }
+
+    void Chosen(Item item)
+    {
+        OnChoose.InvokeAsync(item);
     }
 }

@@ -23,19 +23,24 @@
     <MudText>@playlistUri</MudText>
 }
 
-
-    @foreach (var track in giggities)
+<MudGrid Justify="Justify.FlexStart" Spacing="1">
+@for (int i = 0; i < giggities.Count(); i++)
+{
+    int x = i;
+    
+    
+    @if (giggities[x].Tracks.Items is not null && giggities[x].Tracks.Items.Any() && chosenSongs.Any())
     {
-
-        @if (track.Tracks.Items is not null && track.Tracks.Items.Any())
-        {
-    <div class="justify-content-center"><SongPicker Items="@track.Tracks.Items" /></div>
-            
-            
-        }
-
+        
+            <MudItem Class="flex-grow-1">
+                <SongPicker ChosenSong="@chosenSongs[x]" Items="@giggities.ElementAt(x).Tracks.Items" OnChoose="@(s => chosenSongs[x] = s)" />
+            </MudItem>
+        
+        
     }
     
+}
+</MudGrid>
 
 
 @code {
@@ -50,20 +55,24 @@
     public string Description { get; set; } = string.Empty;
     public PlaylistDetails playlistDetails { get; set; } = new();
     public string playlistUri { get; set; } = string.Empty;
+    public List<Item> chosenSongs { get; set; } = new();
 
     private int selectedIndex = 0;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
         searchTerms = SetlistService.GetSearchList();
         Console.WriteLine("GetTrack");
-        await GetTrack("Periphery Chvrch Bvrner");
-        await GetTrack("Periphery Reptile");
+        // await GetTrack("Periphery Chvrch Bvrner");
+        // await GetTrack("Periphery Reptile");
 
-        // foreach(var term in searchTerms)
-        // {
-        //     await GetTrack(term);
-        // }
+        
+
+        foreach(var term in searchTerms)
+        {
+            await GetTrack(term);
+        }
+        chosenSongs = DetermineBestChoices();
     }
 
     private async Task GetTrack(string term)
@@ -83,6 +92,11 @@
 
     public async Task SubmitPlaylist()
     {
-        playlistUri = await spotifyAuthService.OrchestratePlaylist(playlistDetails, giggities.Select(g => g.Tracks).Select(t => t.Items[0].Uri).ToList());
+        playlistUri = await spotifyAuthService.OrchestratePlaylist(playlistDetails, chosenSongs.Select(u => u.Uri).ToList());
+    }
+
+    private List<Item> DetermineBestChoices()
+    {
+        return giggities.Select(x => x.Tracks.Items[0]).ToList();
     }
 }

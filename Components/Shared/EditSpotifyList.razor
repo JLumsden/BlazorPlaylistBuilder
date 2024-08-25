@@ -1,6 +1,7 @@
 ﻿@page "/editspotifylist/{setlistId}"
 @using ActualPlaylistBuilder.Models
 @using ActualPlaylistBuilder.Models.TrackSearch
+@using Components.Shared
 
 @inject ISetlistService SetlistService
 @inject ISpotifySearchService SpotifySearchService
@@ -22,43 +23,31 @@
     <MudText>@playlistUri</MudText>
 }
 
-<MudExpansionPanels>
-    @foreach (var track in giggities)
+<MudGrid Justify="Justify.FlexStart" Spacing="1">
+@for (int i = 0; i < giggities.Count(); i++)
+{
+    int x = i;
+    
+    
+    @if (giggities[x].Tracks.Items is not null && giggities[x].Tracks.Items.Any() && chosenSongs.Any())
     {
-
-        @if (track.Tracks.Items is not null && track.Tracks.Items.Any())
-        {
-            <MudExpansionPanel>
-                <TitleContent>
-                    <iframe style="border-radius:12px" src="@(string.Format("https://open.spotify.com/embed/track/{0}?utm_source=generator", track.Tracks.Items[0].Id))" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-                </TitleContent>
-                <ChildContent>
-                    <MudTable Items="@track.Tracks.Items">
-                        <RowTemplate>
-                            <MudToolBar Class="ma-2 overflow-auto">
-                            <MudIconButton Icon="@Icons.Material.Filled.SwapVert" Color="Color.Success" />
-                            <iframe style="border-radius:12px" src="@(string.Format("https://open.spotify.com/embed/track/{0}?utm_source=generator", context.Id))" width="100%" height="200" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-                            </MudToolBar>
-                        </RowTemplate>
-                        <PagerContent>
-                            <MudTablePager PageSizeOptions="new int[] { 5, 10}"/>
-                            
-                        </PagerContent>
-                    </MudTable>
-                </ChildContent>
-            </MudExpansionPanel>
-            
-        }
-
+        
+            <MudItem >
+                <SongPicker ChosenSong="@chosenSongs[x]" Items="@giggities.ElementAt(x).Tracks.Items" OnChoose="@(s => chosenSongs[x] = s)" />
+            </MudItem>
+        
+        
     }
     
-</MudExpansionPanels>
+}
+</MudGrid>
+
 
 @code {
     [Parameter]
     public string setlistId { get; set; }
     public List<string> searchTerms { get; set; }
-    public List<Models.TrackSearch.Root> giggities { get; set; } = new();
+    public List<SongSearch> giggities { get; set; } = new();
     public string bloop { get; set; }
     [Inject]
     private ISpotifyAuthService spotifyAuthService { get; set; }
@@ -66,23 +55,29 @@
     public string Description { get; set; } = string.Empty;
     public PlaylistDetails playlistDetails { get; set; } = new();
     public string playlistUri { get; set; } = string.Empty;
+    public List<Item> chosenSongs { get; set; } = new();
 
-    protected override async Task OnInitializedAsync()
+    private int selectedIndex = 0;
+
+    protected override async Task OnParametersSetAsync()
     {
         searchTerms = SetlistService.GetSearchList();
         Console.WriteLine("GetTrack");
-        await GetTrack("Periphery Chvrch Bvrner");
-        await GetTrack("Periphery Reptile");
+        // await GetTrack("Periphery Chvrch Bvrner");
+        // await GetTrack("Periphery Reptile");
 
-        // foreach(var term in searchTerms)
-        // {
-        //     await GetTrack(term);
-        // }
+        
+
+        foreach(var term in searchTerms)
+        {
+            await GetTrack(term);
+        }
+        chosenSongs = DetermineBestChoices();
     }
 
     private async Task GetTrack(string term)
     {
-        Models.TrackSearch.Root? tempVal;
+        SongSearch? tempVal;
         tempVal = await SpotifySearchService.GetTrack(term);
         if (tempVal is not null)
         {
@@ -97,6 +92,11 @@
 
     public async Task SubmitPlaylist()
     {
-        playlistUri = await spotifyAuthService.OrchestratePlaylist(playlistDetails, giggities.Select(g => g.Tracks).Select(t => t.Items[0].Uri).ToList());
+        playlistUri = await spotifyAuthService.OrchestratePlaylist(playlistDetails, chosenSongs.Select(u => u.Uri).ToList());
+    }
+
+    private List<Item> DetermineBestChoices()
+    {
+        return giggities.Select(x => x.Tracks.Items[0]).ToList();
     }
 }

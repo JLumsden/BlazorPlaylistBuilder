@@ -1,0 +1,59 @@
+﻿@using ActualPlaylistBuilder.Models.TrackSearch
+
+
+<MudCard Style="width:200px;">
+    <div class="border-4 @borderClass">
+        @if (Song.Album.Images.Any())
+        {
+            <MudCardMedia Image="@Song.Album.Images.Where(i => i.Height >= 200 && i.Height <= 400).First().Url" Height="200"/>
+        }
+        <MudCardContent>
+            <MudText>@Song.Name</MudText>
+            <MudDivider />
+            <MudText>@Song.Album.Name</MudText>
+            <MudDivider />
+            <MudText>@(String.Join(" | ", Song.Artists.Select(a => a.Name).ToList()))</MudText>
+        </MudCardContent>
+        <MudCardActions>
+            @if (!IsSelected)
+            {
+                <MudIconButton Icon="@Icons.Material.Filled.SwapVert" Color="Color.Success" OnClick="@(() => OnChoose.InvokeAsync(Song))" />
+            }
+            else
+            {
+                @if (showEdit)
+                {
+                    <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowUp" Color="Color.Error" OnClick="@(() => {ShowEdit.InvokeAsync(false); showEdit = false;})" />
+                }
+                else
+                {
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Warning" OnClick="@(() => {ShowEdit.InvokeAsync(true); showEdit = true;})" />
+                }
+
+            }
+
+            <MudSpacer />
+            <MudIconButton Icon="@Icons.Material.Filled.PlayArrow" Color="Color.Success" />
+        </MudCardActions>
+    </div>
+</MudCard>
+
+
+
+@code {
+    [Parameter]
+    public Item? Song { get; set; }
+    [Parameter]
+    public bool IsSelected { get; set; } = false;
+    [Parameter] public EventCallback<Item> OnChoose { get; set; }
+    [Parameter] public EventCallback<bool> ShowEdit { get; set; }
+    private bool showEdit { get; set; } = false;
+    private string borderClass
+    {
+        get
+        {
+            return IsSelected ? "border-solid mud-border-success" : "border-dotted mud-border-primary";
+        }
+    }
+    public bool HasImage { get; set; } = false;
+}

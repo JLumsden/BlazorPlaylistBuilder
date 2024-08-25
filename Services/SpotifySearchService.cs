@@ -11,7 +11,7 @@ namespace ActualPlaylistBuilder.Services
 {
     public interface ISpotifySearchService
     {
-        Task<Models.TrackSearch.Root> GetTrack(string searchTerm);
+        Task<SongSearch> GetTrack(string searchTerm);
     }
     public class SpotifySearchService : ISpotifySearchService
     {
@@ -29,13 +29,13 @@ namespace ActualPlaylistBuilder.Services
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _anonAuthService.GetAnonToken().Result);
         }
 
-        public async Task<Models.TrackSearch.Root> GetTrack(string searchTerm)
+        public async Task<SongSearch> GetTrack(string searchTerm)
         {
             try
             {
-                var url = string.Format("https://api.spotify.com/v1/search?q={0}&type=track&limit=10&market=US", HttpUtility.UrlEncode(searchTerm));
+                var url = string.Format("https://api.spotify.com/v1/search?q={0}&type=track&limit=50&market=US", HttpUtility.UrlEncode(searchTerm));
 
-                var response = await httpClient.GetFromJsonAsync<Models.TrackSearch.Root>(url);
+                var response = await httpClient.GetFromJsonAsync<SongSearch>(url);
 
                 
                 

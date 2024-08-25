@@ -6,12 +6,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Content Remove="Components\Pages\AcceptToken.razor" />
-    <Content Remove="Components\Pages\ChooseAuthProvider.razor" />
-    <Content Remove="Components\Pages\Setlist.razor" />
-    <Content Remove="Components\Pages\wtf.razor" />
-  </ItemGroup>
 
 
   <ItemGroup>

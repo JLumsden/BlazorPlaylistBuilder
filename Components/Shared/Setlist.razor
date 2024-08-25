@@ -11,13 +11,14 @@
 @inject NavigationManager NavManager
 
 <MudLayout>
+    <MudAppBar Fixed="false" Class="fixed">
+        <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Class="mr-5" />
+        <MudIconButton Icon="@Icons.Material.Outlined.Add" OnClick="OnSubmit" />
+
+    </MudAppBar>
     @if (eventData is not null)
     {
-        <MudAppBar Fixed="false" Class="fixed">
-                <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Class="mr-5" />
-                <MudIconButton Icon="@Icons.Material.Outlined.Add" OnClick="OnSubmit"/>
-            
-        </MudAppBar>
+        
         
         <MudTimeline TimelinePosition="TimelinePosition.Left" Class="">
             <MudTimelineItem>

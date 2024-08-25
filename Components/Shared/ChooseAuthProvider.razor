@@ -1,6 +1,16 @@
 ﻿@page "/chooseservice"
 
-<MudButton Color="Color.Success" OnClick="SpotifyLogin">Login with Spotify</MudButton>
+<MudPaper Elevation="10" Class="pa-4">
+    <MudStack>
+        <MudText>Welcome to my playlist building utility!</MudText>
+        <MudText>This tool allows you to generate a Spotify Playlist uing a Setlist.FM setlist URL.</MudText>
+        <MudText>It can also be used as a general Spotify Playlist building tool!</MudText>
+        <MudStack Row="true" AlignItems="AlignItems.Center">
+            <MudText>Start by logging in with Spotify.</MudText>
+            <MudButton Color="Color.Success" OnClick="SpotifyLogin">Login with Spotify</MudButton>
+        </MudStack>
+    </MudStack>
+</MudPaper>
 
 @code {
     [Inject]

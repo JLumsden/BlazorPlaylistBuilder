@@ -1,22 +1,25 @@
-﻿@page "/editspotifylist/{setlistId}"
+﻿@page "/editspotifylist"
 @using ActualPlaylistBuilder.Models
 @using ActualPlaylistBuilder.Models.TrackSearch
 @using Components.Shared
 
 @inject ISetlistService SetlistService
 @inject ISpotifySearchService SpotifySearchService
+@inject ISnackbar Snackbar
 
 @* @foreach(var item in searchTerms)
 {
     <MudPaper>@item</MudPaper>
 } *@
-<MudToolBar Fixed="true" Color="Color.Primary" Elevation="1">
-    <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" />
-    <MudTextField @bind-Value="playlistDetails.name" HelperText="Playlist Name"/>
-    <MudTextField @bind-Value="playlistDetails.description" HelperText="Playlist Description"/>
-    <MudSpacer />
-    <MudIconButton Icon="@Icons.Material.Filled.Check" Color="Color.Success" Edge="Edge.End" OnClick="SubmitPlaylist"/>
-</MudToolBar>
+<MudPaper Elevation="10" Class="ma-4">
+    <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+        <MudText>Playlist Details</MudText>
+        <MudTextField @bind-Value="playlistDetails.name" HelperText="Playlist Name" Class="pa-4" />
+        <MudTextField @bind-Value="playlistDetails.description" HelperText="Playlist Description" Class="pa-4" />
+        <MudSpacer />
+        <MudButton OnClick="SubmitPlaylist" Color="Color.Success">Create Playlist</MudButton>
+    </MudStack>
+</MudPaper>
 
 @if(!string.IsNullOrEmpty(playlistUri))
 {
@@ -44,8 +47,6 @@
 
 
 @code {
-    [Parameter]
-    public string setlistId { get; set; }
     public List<string> searchTerms { get; set; }
     public List<SongSearch> giggities { get; set; } = new();
     public string bloop { get; set; }
@@ -62,11 +63,12 @@
     protected override async Task OnParametersSetAsync()
     {
         searchTerms = SetlistService.GetSearchList();
+        playlistDetails = SetlistService.GetPlaylist();
         Console.WriteLine("GetTrack");
         // await GetTrack("Periphery Chvrch Bvrner");
         // await GetTrack("Periphery Reptile");
 
-        
+
 
         foreach(var term in searchTerms)
         {
@@ -92,7 +94,15 @@
 
     public async Task SubmitPlaylist()
     {
-        playlistUri = await spotifyAuthService.OrchestratePlaylist(playlistDetails, chosenSongs.Select(u => u.Uri).ToList());
+        if (string.IsNullOrEmpty(playlistDetails.name) || string.IsNullOrEmpty(playlistDetails.description))
+        {
+            Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
+            Snackbar.Add("Playlist Details must not be blank!", Severity.Error);
+        }
+        else
+        {
+            playlistUri = await spotifyAuthService.OrchestratePlaylist(playlistDetails, chosenSongs.Select(u => u.Uri).ToList());
+        }
     }
 
     private List<Item> DetermineBestChoices()

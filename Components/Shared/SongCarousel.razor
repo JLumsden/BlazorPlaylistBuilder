@@ -3,10 +3,10 @@
 
 <MudCarousel ItemsSource="_items" TData="Item[]" ShowArrows="true" ShowBullets="true" AutoCycle="false" Style="height:550px;">
     <ItemTemplate>
-        <MudGrid Justify="Justify.Center">
+        <MudGrid Justify="Justify.SpaceEvenly" Spacing="1">
             @foreach (var song in context)
             {
-                <MudItem xs="6">
+                <MudItem>
                     <SongCard Song="song" OnChoose="Chosen" />
                 </MudItem>
             }
@@ -22,7 +22,7 @@
     public List<Item> Items { get; set; }
     [Parameter] public EventCallback<Item> OnChoose { get; set; }
     private IEnumerable<Item[]> _items { get; set; }
-    const int PAGE_SIZE = 5;
+    const int PAGE_SIZE = 3;
 
     protected override Task OnParametersSetAsync()
     {

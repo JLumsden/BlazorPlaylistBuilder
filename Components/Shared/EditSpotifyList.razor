@@ -32,7 +32,7 @@
     @if (giggities[x].Tracks.Items is not null && giggities[x].Tracks.Items.Any() && chosenSongs.Any())
     {
         
-            <MudItem Class="flex-grow-1">
+            <MudItem >
                 <SongPicker ChosenSong="@chosenSongs[x]" Items="@giggities.ElementAt(x).Tracks.Items" OnChoose="@(s => chosenSongs[x] = s)" />
             </MudItem>
         

@@ -1,14 +1,15 @@
 ﻿@using ActualPlaylistBuilder.Models.TrackSearch
 
 
-        <SongCard Song="@ChosenSong" IsSelected="true" ShowEdit="@(b => {showEdit = b;})" />
-        @if (showEdit)
-        {
-            
-            <SongCarousel Items="@Items" OnChoose="@(s => {OnChoose.InvokeAsync(s);})" />
-            
-        }
+<div>
+    <SongCard Song="@ChosenSong" IsSelected="true" ShowEdit="@(b => {showEdit = b;})" />
+    @if (showEdit)
+    {
 
+    <SongCarousel Items="@Items" OnChoose="@(s => {OnChoose.InvokeAsync(s);})" />
+
+    }
+</div>
     @* <MudExpansionPanels>
     <MudExpansionPanel>
     <TitleContent>

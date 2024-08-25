@@ -11,41 +11,38 @@
 @inject NavigationManager NavManager
 
 <MudStack>
-
     <MudPaper Elevation="10" Class="d-flex justify-center">
         <MudText Class="pa-2">Customize the search terms for the songs in your Spotify playlist.</MudText>
-        
         <MudButton OnClick="OnSubmit" Color="Color.Success">Submit</MudButton>
-
     </MudPaper>
-  
-        <MudTimeline TimelinePosition="TimelinePosition.Left" Class="">
+
+    <MudTimeline TimelinePosition="TimelinePosition.Left" Class="">
+        <MudTimelineItem>
+            <ItemDot>
+                <MudIconButton Icon="@Icons.Material.Filled.AddCircle" Title="Add" Color="Color.Success" OnClick="(() => AddSong(-1))" />
+            </ItemDot>
+        </MudTimelineItem>
+        @for (int i = 0; i < searchTerms.Count(); i++)
+        {
+            int x = i;
             <MudTimelineItem>
                 <ItemDot>
-                    <MudIconButton Icon="@Icons.Material.Filled.AddCircle" Title="Add" Color="Color.Success" OnClick="(() => AddSong(-1))" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="(() => DeleteSong(x))" />
+                </ItemDot>
+                <ItemContent>
+                    <MudPaper>
+                        <MudTextField @bind-Value="searchTerms[x]" T="string" Label="Search Term" />
+                    </MudPaper>
+                </ItemContent>
+            </MudTimelineItem>
+            <MudTimelineItem>
+                <ItemDot>
+                    <MudIconButton Icon="@Icons.Material.Filled.AddCircle" Title="Add" Color="Color.Success" OnClick="(() => AddSong(x))" />
                 </ItemDot>
             </MudTimelineItem>
-            @for(int i = 0; i < searchTerms.Count(); i++)
-            {
-                int x = i;
-                <MudTimelineItem>
-                    <ItemDot>
-                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="(() => DeleteSong(x))"/>
-                    </ItemDot>
-                    <ItemContent>
-                        <MudPaper>
-                            <MudTextField @bind-Value="searchTerms[x]" T="string" Label="Search Term" />
-                        </MudPaper>
-                    </ItemContent>
-                </MudTimelineItem>
-                <MudTimelineItem>
-                    <ItemDot>
-                        <MudIconButton Icon="@Icons.Material.Filled.AddCircle" Title="Add" Color="Color.Success" OnClick="(() => AddSong(x))"/>
-                    </ItemDot>
-                </MudTimelineItem>
-            }
-        </MudTimeline>
-    @if(!string.IsNullOrEmpty(message))
+        }
+    </MudTimeline>
+    @if (!string.IsNullOrEmpty(message))
     {
         <MudText>@message</MudText>
     }

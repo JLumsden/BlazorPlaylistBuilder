@@ -26,8 +26,6 @@ namespace ActualPlaylistBuilder.Services
         }
         public string GetHeaderValue()
         {
-            //TODO Do this better
-            
             return string.Format("{0}:{1}", ClientId, ClientSecret);
         }
         public string GetClientId()

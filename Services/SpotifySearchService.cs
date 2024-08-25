@@ -37,10 +37,6 @@ namespace ActualPlaylistBuilder.Services
 
                 var response = await httpClient.GetFromJsonAsync<SongSearch>(url);
 
-                
-                
-                
-
                 return response;
             }
             catch (Exception ex)

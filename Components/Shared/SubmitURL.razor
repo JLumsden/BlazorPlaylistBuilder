@@ -10,16 +10,11 @@
 @inject ISpotifyAnonAuthService SpotifyAnonAuthService
 
 <MudPaper Elevation="10" Class="pa-4">
-    
     <MudStack>
-        
         <MudText>Enter your setlist url from setlist.fm (ex. https://www.setlist.fm/setlist/opeth/2017/red-rocks-amphitheatre-morrison-co-6be7a62a.html)</MudText>
         <MudStack Justify="Justify.Center" Row="true">
-
             <MudTextField @bind-Value="SetlistUrl" Label="Setlist.fm URL" Variant="Variant.Outlined" Margin="Margin.Dense" />
-
             <MudButton Color="Color.Success" OnClick="SubmitUrl">Submit</MudButton>
-
         </MudStack>
         <MudText>Or</MudText>
         <MudButton Color="Color.Success" OnClick="BuildCustom">Build Custom Playlist</MudButton>
@@ -30,10 +25,8 @@
     private string SetlistUrl { get; set; } = string.Empty;
     private string SetlistId { get; set; } = string.Empty;
     private bool ShowSetlist { get; set; } = false;
-
     private Root? eventData { get; set; }
     private string[] setlistIds = { "3ab0503" };
-    //3ab0503
 
     private void BuildCustom()
     {
@@ -48,7 +41,6 @@
         queryString.Add("SetlistId", SetlistId);
 
         NavManager.NavigateTo($"/editlist?{queryString}");
-
     }
 
     private string ParseUrlForId()

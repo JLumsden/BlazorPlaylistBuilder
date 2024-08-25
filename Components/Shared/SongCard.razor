@@ -1,11 +1,10 @@
 ﻿@using ActualPlaylistBuilder.Models.TrackSearch
 
-
 <MudCard Style="width:200px;">
     <div class="border-4 @borderClass">
         @if (Song.Album.Images.Any())
         {
-            <MudCardMedia Image="@Song.Album.Images.Where(i => i.Height >= 200 && i.Height <= 400).First().Url" Height="200"/>
+            <MudCardMedia Image="@Song.Album.Images.Where(i => i.Height >= 200 && i.Height <= 400).First().Url" Height="200" />
         }
         <MudCardContent>
             <MudText>@Song.Name</MudText>
@@ -29,16 +28,12 @@
                 {
                     <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Warning" OnClick="@(() => {ShowEdit.InvokeAsync(true); showEdit = true;})" />
                 }
-
             }
-
             <MudSpacer />
             <MudIconButton Icon="@Icons.Material.Filled.PlayArrow" Color="Color.Success" />
         </MudCardActions>
     </div>
 </MudCard>
-
-
 
 @code {
     [Parameter]

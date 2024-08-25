@@ -4,33 +4,43 @@
 
 @using System.Text.Json
 @using System.Text.Json.Serialization
+@using System.Web
 @inject IHttpClientFactory ClientFactory
 @inject NavigationManager NavManager
 @inject ISpotifyAnonAuthService SpotifyAnonAuthService
 
-<MudContainer Class="mt-6">
-    <MudTextField @bind-Value="SetlistUrl" Label="URL" Variant="Variant.Outlined" Margin="Margin.Dense" />
-    <MudTextField @bind-Value="SetlistId" Label="Id" Variant="Variant.Outlined" Margin="Margin.Dense" />
-    <MudButton Variant="Variant.Filled" DropShadow="false" OnClick="SubmitUrl">Submit URL</MudButton>
-    
-</MudContainer>
+<MudPaper Elevation="10" Class="pa-4">
+    <MudStack>
+        <MudText>Enter your setlist url from setlist.fm (ex. https://www.setlist.fm/setlist/opeth/2017/red-rocks-amphitheatre-morrison-co-6be7a62a.html)</MudText>
+        <MudStack Justify="Justify.Center" Row="true">
+            <MudTextField @bind-Value="SetlistUrl" Label="Setlist.fm URL" Variant="Variant.Outlined" Margin="Margin.Dense" />
+            <MudButton Color="Color.Success" OnClick="SubmitUrl">Submit</MudButton>
+        </MudStack>
+        <MudText>Or</MudText>
+        <MudButton Color="Color.Success" OnClick="BuildCustom">Build Custom Playlist</MudButton>
+    </MudStack>
+</MudPaper>
 
 @code {
-    private string SetlistUrl { get; set; } = "3ab0503";
-    private string SetlistId { get; set; } = "3ab0503";
+    private string SetlistUrl { get; set; } = string.Empty;
+    private string SetlistId { get; set; } = string.Empty;
     private bool ShowSetlist { get; set; } = false;
-
     private Root? eventData { get; set; }
     private string[] setlistIds = { "3ab0503" };
-    //3ab0503
 
+    private void BuildCustom()
+    {
+        NavManager.NavigateTo("/editlist");
+    }
 
     private void SubmitUrl()
     {
         SetlistId = setlistIds.Contains(SetlistUrl) ? SetlistUrl : ParseUrlForId();
-        NavManager.NavigateTo("/editlist/" + SetlistId);
-        Console.WriteLine("Token + date = " + SpotifyAnonAuthService.GetAnonToken().Result);
 
+        var queryString = HttpUtility.ParseQueryString("");
+        queryString.Add("SetlistId", SetlistId);
+
+        NavManager.NavigateTo($"/editlist?{queryString}");
     }
 
     private string ParseUrlForId()

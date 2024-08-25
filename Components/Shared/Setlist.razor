@@ -1,4 +1,4 @@
-﻿@page "/editlist/{setlistId}"
+﻿@page "/editlist"
 @using ActualPlaylistBuilder.Models
 @using System.Text.Json
 @using System.Text.Json.Serialization
@@ -10,51 +10,46 @@
 @inject ISetlistService SetlistService
 @inject NavigationManager NavManager
 
-<MudLayout>
-    <MudAppBar Fixed="false" Class="fixed">
-        <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Class="mr-5" />
-        <MudIconButton Icon="@Icons.Material.Outlined.Add" OnClick="OnSubmit" />
+<MudStack>
+    <MudPaper Elevation="10" Class="d-flex justify-center">
+        <MudText Class="pa-2">Customize the search terms for the songs in your Spotify playlist.</MudText>
+        <MudButton OnClick="OnSubmit" Color="Color.Success">Submit</MudButton>
+    </MudPaper>
 
-    </MudAppBar>
-    @if (eventData is not null)
-    {
-        
-        
-        <MudTimeline TimelinePosition="TimelinePosition.Left" Class="">
+    <MudTimeline TimelinePosition="TimelinePosition.Left" Class="">
+        <MudTimelineItem>
+            <ItemDot>
+                <MudIconButton Icon="@Icons.Material.Filled.AddCircle" Title="Add" Color="Color.Success" OnClick="(() => AddSong(-1))" />
+            </ItemDot>
+        </MudTimelineItem>
+        @for (int i = 0; i < searchTerms.Count(); i++)
+        {
+            int x = i;
             <MudTimelineItem>
                 <ItemDot>
-                    <MudIconButton Icon="@Icons.Material.Filled.AddCircle" Title="Add" Color="Color.Success" OnClick="(() => AddSong(-1))" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="(() => DeleteSong(x))" />
+                </ItemDot>
+                <ItemContent>
+                    <MudPaper>
+                        <MudTextField @bind-Value="searchTerms[x]" T="string" Label="Search Term" />
+                    </MudPaper>
+                </ItemContent>
+            </MudTimelineItem>
+            <MudTimelineItem>
+                <ItemDot>
+                    <MudIconButton Icon="@Icons.Material.Filled.AddCircle" Title="Add" Color="Color.Success" OnClick="(() => AddSong(x))" />
                 </ItemDot>
             </MudTimelineItem>
-        @for(int i = 0; i < searchTerms.Count(); i++)
-            {
-                int x = i;
-                <MudTimelineItem>
-                    <ItemDot>
-                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="(() => DeleteSong(x))"/>
-                    </ItemDot>
-                    <ItemContent>
-                        <MudPaper>
-                            <MudTextField @bind-Value="searchTerms[x]" T="string" Label="Search Term" />
-                        </MudPaper>
-                    </ItemContent>
-                </MudTimelineItem>
-                <MudTimelineItem>
-                    <ItemDot>
-                        <MudIconButton Icon="@Icons.Material.Filled.AddCircle" Title="Add" Color="Color.Success" OnClick="(() => AddSong(x))"/>
-                    </ItemDot>
-                </MudTimelineItem>
-            }
-        </MudTimeline>
-    }
-    @if(!string.IsNullOrEmpty(message))
+        }
+    </MudTimeline>
+    @if (!string.IsNullOrEmpty(message))
     {
         <MudText>@message</MudText>
     }
-</MudLayout>
+</MudStack>
 
 @code {
-    [Parameter]
+    [SupplyParameterFromQuery]
     public string setlistId { get; set; } = string.Empty;
     private Root? eventData { get; set; }
     private List<string> searchTerms { get; set; } = new();
@@ -65,50 +60,69 @@
 
     protected override async Task OnInitializedAsync()
     {
-        //string tok = SpotifyAnonService.GetAuthToken().Result ?? string.Empty;
-        //Snackbar.Add(tok, Severity.Normal);
-        Root? tempData = null;
-
-        var request = new HttpRequestMessage(HttpMethod.Get, "https://api.setlist.fm/rest/1.0/setlist/" + setlistId);
-        request.Headers.Add("x-api-key", _configuration["setlistfm_key"]);
-        request.Headers.Add("Accept", "application/json");
-
-        var client = ClientFactory.CreateClient();
-
-        var response = await client.SendAsync(request);
-
-        if (response.IsSuccessStatusCode)
+        if (!string.IsNullOrEmpty(setlistId))
         {
-            using var responseStream = await response.Content.ReadAsStreamAsync(); 
-            tempData = await JsonSerializer.DeserializeAsync
-                <Root>(responseStream);
-        }
-        else
-        {
-            message = "Setlist.FM is currently experiencing server issues!";
-        }
+            Root? tempData = null;
 
+            var request = new HttpRequestMessage(HttpMethod.Get, "https://api.setlist.fm/rest/1.0/setlist/" + setlistId);
+            request.Headers.Add("x-api-key", _configuration["setlistfm_key"]);
+            request.Headers.Add("Accept", "application/json");
 
-        eventData = tempData;
+            var client = ClientFactory.CreateClient();
 
-        if (eventData is not null && eventData.sets.set.Any())
-        {
+            var response = await client.SendAsync(request);
 
-            List<string> tempNames = new();
-            List<Song> tempSongs = new();
-            foreach (var set in eventData.sets.set)
+            if (response.IsSuccessStatusCode)
             {
-                tempSongs.AddRange(set.song);
+                using var responseStream = await response.Content.ReadAsStreamAsync();
+                tempData = await JsonSerializer.DeserializeAsync
+                    <Root>(responseStream);
             }
-            searchTerms = tempSongs.Select(x => string.Format("{0} {1}", eventData.artist.name, x.name)).ToList();
-        }
+            else
+            {
+                message = "Setlist.FM is currently experiencing server issues!";
+            }
 
+
+            eventData = tempData;
+
+            if (eventData is not null && eventData.sets.set.Any())
+            {
+
+                List<string> tempNames = new();
+                List<Song> tempSongs = new();
+                foreach (var set in eventData.sets.set)
+                {
+                    tempSongs.AddRange(set.song);
+                }
+                searchTerms = tempSongs.Select(x => string.Format("{0} {1}", eventData.artist.name, x.name)).ToList();
+            }
+        }
     }
 
     public void OnSubmit()
     {
-        SetlistService.SetSearchList(searchTerms);
-        NavManager.NavigateTo("/editspotifylist/" + setlistId);
+        PlaylistDetails tempPlaylist;
+
+        if (eventData is not null && eventData.artist is not null && eventData.tour is not null && !string.IsNullOrEmpty(eventData.artist.name) && !string.IsNullOrEmpty(eventData.tour.name))
+        {
+            tempPlaylist = new PlaylistDetails
+                {
+                    name = $"{eventData.artist.name}'s {eventData.tour.name} Selist",
+                    description = $"{eventData.artist.name}'s {eventData.tour.name} Selist."
+                };
+        }
+        else
+        {
+            tempPlaylist = new PlaylistDetails
+                {
+                    name = "",
+                    description = ""
+                };
+        }
+
+        SetlistService.SetData(searchTerms, tempPlaylist);
+        NavManager.NavigateTo("/editspotifylist");
     }
 
     public void AddSong(int index)

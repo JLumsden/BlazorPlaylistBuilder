@@ -2,22 +2,17 @@
 
 <MudPaper Elevation="0">
     <div class="d-flex flex-row">
-    @if (Song.Album.Images.Any())
-    {
-        <MudImage Src="@Song.Album.Images.Where(i => i.Height >= 200 && i.Height <= 400).First().Url" Height="200" />
-    }
-    
+        @if (Song.Album.Images.Any())
+        {
+            <MudImage Src="@Song.Album.Images.Where(i => i.Height >= 200 && i.Height <= 400).First().Url" Height="200" />
+        }
         <MudText>@Song.Name</MudText>
-
         <MudText>@Song.Album.Name</MudText>
-
         <MudText>@(String.Join(" | ", Song.Artists.Select(a => a.Name).ToList()))</MudText>
-    
-    
-    <div class="ml-auto"><MudIconButton Icon="@Icons.Material.Filled.PlayArrow" Color="Color.Success" /></div>
-    
+        <div class="ml-auto"><MudIconButton Icon="@Icons.Material.Filled.PlayArrow" Color="Color.Success" /></div>
     </div>
 </MudPaper>
+
 @code {
     [Parameter]
     public Item? Song { get; set; }

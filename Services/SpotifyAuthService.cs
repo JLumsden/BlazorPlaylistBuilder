@@ -1,17 +1,8 @@
 ﻿using ActualPlaylistBuilder.Models;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.VisualBasic;
 using Newtonsoft.Json;
-using System;
 using System.Net.Http.Headers;
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.Json.Nodes;
-using System.Text.RegularExpressions;
 using System.Web;
-
-//https://localhost:7147/token?code=AQD6HpNv2xqtdb-X0BKp2M6wYEZEDHpfiZIxvfNol3vgFjRaeBvqvfupbNwdZ7zGMG3NNb9TxqGH87nwPPKiTEJ67qPmd_sWI8oQ6Baeh-ao3rHtulmUPsOMQL3sP8YzIO9Cr0bHiLqIkN8XnS53HVfnnify6xWTT22CNyyVILPvTBXI5DEyq--mGDV08N4ygwDKuTkrec0-kEQYqv4NCSyy5OdR-IZfnZC171apipBRJObu9JG-3ZUuhjeEP2QW3wihZj7GfNJjgzzs
 
 namespace ActualPlaylistBuilder.Services
 {
@@ -51,8 +42,6 @@ namespace ActualPlaylistBuilder.Services
             queryString.Add("redirect_uri", "https://localhost:7147/token");
             queryString.Add("scope", "playlist-modify-public");
             
-
-
             _navigationManager.NavigateTo($"https://accounts.spotify.com/authorize?{queryString}");
         }
 
@@ -63,28 +52,17 @@ namespace ActualPlaylistBuilder.Services
             if(spotifyUser is not null) createdPlaylist = await CreatePlaylist(spotifyUser.Id, playlistDetails);
             if(createdPlaylist is not null) await PopulatePlaylist(createdPlaylist.Id, songUris);
             return createdPlaylist.Uri;
-
-            //return string.Empty;
         }
         private async Task<AuthToken> GetAccessToken(string code)
         {
-            //httpClient.DefaultRequestHeaders.Accept.Clear();
-            //httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
-
-            //httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(_credentials.GetHeaderValue())));
-
             httpClient = new HttpClient();
-            //httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(_credentials.GetHeaderValue())));
 
             List<KeyValuePair<string, string>> requestData = new List<KeyValuePair<string, string>>();
 
-            //requestData.Add(new KeyValuePair<string, string>("client_id", _credentials.GetClientId()));
             requestData.Add(new KeyValuePair<string, string>("grant_type", "authorization_code"));
             requestData.Add(new KeyValuePair<string, string>("code", code));
             requestData.Add(new KeyValuePair<string, string>("redirect_uri", "https://localhost:7147/token"));
-
-            
 
             using var client = new HttpClient();
             using var req = new HttpRequestMessage(HttpMethod.Post, "https://accounts.spotify.com/api/token") { Content = new FormUrlEncodedContent(requestData) };
@@ -104,7 +82,6 @@ namespace ActualPlaylistBuilder.Services
             {
                 var httpClient = new HttpClient();
                 httpClient.DefaultRequestHeaders.Accept.Clear();
-                //httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token.access_token);
 
@@ -116,10 +93,6 @@ namespace ActualPlaylistBuilder.Services
                 {
                     return tempUser;
                 }
-
-                //var responseContent = await response.Content.ReadAsStringAsync();
-                //AnonToken? tempToken = JsonConvert.DeserializeObject<AnonToken>(responseContent);
-                
             }
             catch (Exception ex)
             {
@@ -144,7 +117,6 @@ namespace ActualPlaylistBuilder.Services
                 CreatedPlaylist? tempPlaylist = JsonConvert.DeserializeObject<CreatedPlaylist>(responseContent);
 
                 return tempPlaylist;
-                
             }
             catch (Exception ex)
             {
@@ -163,7 +135,6 @@ namespace ActualPlaylistBuilder.Services
 
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token.access_token);
 
-
                 PlaylistUris playlistUris = new PlaylistUris
                 {
                     uris = songUris
@@ -171,8 +142,6 @@ namespace ActualPlaylistBuilder.Services
 
                 var response = await httpClient.PostAsJsonAsync($"https://api.spotify.com/v1/playlists/{playlistId}/tracks", playlistUris);
                 return response.IsSuccessStatusCode;
-                
-
             }
             catch (Exception ex)
             {

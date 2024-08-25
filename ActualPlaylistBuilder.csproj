@@ -37,7 +37,6 @@
   <ItemGroup>
     <None Include="Components\Shared\ChooseAuthProvider.razor" />
     <None Include="Components\Shared\AcceptToken.razor" />
-    <None Include="Components\Shared\Wtf.razor" />
     <None Include="Components\Shared\Setlist.razor" />
   </ItemGroup>
 

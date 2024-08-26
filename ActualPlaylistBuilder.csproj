@@ -14,44 +14,4 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
-
-  <ItemGroup>
-    <Folder Include="Components\Modals\" />
-    <Folder Include="Repository\" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Components\Pages\Setlist.razor" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="Components\Pages\AcceptToken.razor" />
-    <_ContentIncludedByDefault Remove="Components\Pages\ChooseAuthProvider.razor" />
-    <_ContentIncludedByDefault Remove="Components\Pages\Setlist.razor" />
-    <_ContentIncludedByDefault Remove="Components\Pages\wtf.razor" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <None Include="Components\Shared\ChooseAuthProvider.razor" />
-    <None Include="Components\Shared\AcceptToken.razor" />
-    <None Include="Components\Shared\Setlist.razor" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Components\Pages\wtf.razor" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Components\Pages\AcceptToken.razor" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Components\Pages\ChooseAuthProvider.razor" />
-  </ItemGroup>
 </Project>

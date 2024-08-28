@@ -7,7 +7,7 @@
             @foreach (var song in context)
             {
                 <MudItem>
-                    <SongCard Song="song" OnChoose="Chosen" />
+                    <SongCard Song="song" OnChoose="Chosen" PlaySong="choosePlayingSong" />
                 </MudItem>
             }
         </MudGrid>
@@ -19,6 +19,7 @@
     [Parameter]
     public List<Item> Items { get; set; }
     [Parameter] public EventCallback<Item> OnChoose { get; set; }
+    [Parameter] public EventCallback<string> PlaySong { get; set; }
     private IEnumerable<Item[]> _items { get; set; }
     const int PAGE_SIZE = 3;
 
@@ -32,5 +33,9 @@
     void Chosen(Item item)
     {
         OnChoose.InvokeAsync(item);
+    }
+    void choosePlayingSong(string chosenSong)
+    {
+        PlaySong.InvokeAsync(chosenSong);
     }
 }

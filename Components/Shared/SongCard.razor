@@ -16,7 +16,7 @@
         <MudCardActions>
             @if (!IsSelected)
             {
-                <MudIconButton Icon="@Icons.Material.Filled.SwapVert" Color="Color.Success" OnClick="@(() => OnChoose.InvokeAsync(Song))" />
+                <MudIconButton Icon="@Icons.Material.Filled.SwapVert" Color="Color.Success" OnClick="Chosen" />
             }
             else
             {
@@ -30,7 +30,7 @@
                 }
             }
             <MudSpacer />
-            <MudIconButton Icon="@Icons.Material.Filled.PlayArrow" Color="Color.Success" />
+            <MudIconButton Icon="@Icons.Material.Filled.PlayArrow" Color="Color.Success" OnClick="@(() => PlaySong.InvokeAsync(Song.Id))"/>
         </MudCardActions>
     </div>
 </MudCard>
@@ -42,6 +42,7 @@
     public bool IsSelected { get; set; } = false;
     [Parameter] public EventCallback<Item> OnChoose { get; set; }
     [Parameter] public EventCallback<bool> ShowEdit { get; set; }
+    [Parameter] public EventCallback<string> PlaySong { get; set; }
     private bool showEdit { get; set; } = false;
     private string borderClass
     {
@@ -50,5 +51,11 @@
             return IsSelected ? "border-solid mud-border-success" : "border-dotted mud-border-primary";
         }
     }
-    public bool HasImage { get; set; } = false;
+
+    void Chosen()
+    {
+        showEdit = false;
+        OnChoose.InvokeAsync(Song);
+        StateHasChanged();
+    }
 }

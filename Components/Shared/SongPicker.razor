@@ -1,13 +1,17 @@
 ﻿@using ActualPlaylistBuilder.Models.TrackSearch
 
 <MudPaper Class="pa-2" Elevation="10">
-    <div class="d-flex align-center">
-        <SongCard Song="@ChosenSong" IsSelected="true" ShowEdit="@(b => {showEdit = b;})" />
+    <div class="d-flex align-center justify-center mb-2">
+        <SongCard Song="@ChosenSong" IsSelected="true" ShowEdit="@(b => {showEdit = b;})" PlaySong="choosePlayingSong"/>
         @if (showEdit)
         {
-            <SongCarousel Items="@Items" OnChoose="@(s => {OnChoose.InvokeAsync(s);})" />
+            <SongCarousel Items="@Items" OnChoose="Chosen" PlaySong="choosePlayingSong" />
         }
     </div>
+    @if (playSong)
+    {
+        <div><iframe style="border-radius:12px" src="@(string.Format("https://open.spotify.com/embed/track/{0}?utm_source=generator", playingSong))" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+    }
 </MudPaper>
 
 @code {
@@ -19,6 +23,8 @@
     private bool showEdit {get; set;} = false;
     private IEnumerable<Item[]> _items { get; set; }
     const int PAGE_SIZE = 5;
+    private bool playSong { get; set; } = false;
+    private string playingSong { get; set; } = string.Empty;
 
     protected override Task OnParametersSetAsync()
     {
@@ -29,6 +35,14 @@
 
     void Chosen(Item item)
     {
+        showEdit = false;
         OnChoose.InvokeAsync(item);
+    }
+
+    void choosePlayingSong(string chosenSong)
+    {
+        playSong = true;
+        playingSong = chosenSong;
+        StateHasChanged();
     }
 }

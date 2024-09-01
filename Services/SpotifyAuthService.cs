@@ -39,7 +39,7 @@ namespace ActualPlaylistBuilder.Services
             var queryString = HttpUtility.ParseQueryString("");
             queryString.Add("client_id", _credentials.GetClientId());
             queryString.Add("response_type", "code");
-            queryString.Add("redirect_uri", "https://localhost:7147/token");
+            queryString.Add("redirect_uri", $"{_navigationManager.BaseUri}token");
             queryString.Add("scope", "playlist-modify-public");
             
             _navigationManager.NavigateTo($"https://accounts.spotify.com/authorize?{queryString}");
@@ -62,7 +62,7 @@ namespace ActualPlaylistBuilder.Services
 
             requestData.Add(new KeyValuePair<string, string>("grant_type", "authorization_code"));
             requestData.Add(new KeyValuePair<string, string>("code", code));
-            requestData.Add(new KeyValuePair<string, string>("redirect_uri", "https://localhost:7147/token"));
+            requestData.Add(new KeyValuePair<string, string>("redirect_uri", $"{_navigationManager.BaseUri}token"));
 
             using var client = new HttpClient();
             using var req = new HttpRequestMessage(HttpMethod.Post, "https://accounts.spotify.com/api/token") { Content = new FormUrlEncodedContent(requestData) };

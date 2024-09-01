@@ -17,22 +17,19 @@
     </MudStack>
 </MudPaper>
 
-@if(!string.IsNullOrEmpty(playlistUri))
-{
-    <MudText>@playlistUri</MudText>
-}
 
 <MudGrid Justify="Justify.FlexStart" Spacing="1">
-@for (int i = 0; i < searches.Count(); i++)
-{
-    int x = i;
+    @for (int i = 0; i < searches.Count(); i++)
+    {
+        int x = i;
 
-    @if (searches[x].Tracks.Items is not null && searches[x].Tracks.Items.Any() && chosenSongs.Any())
-    {      <MudItem >
+        @if (searches[x].Tracks.Items is not null && searches[x].Tracks.Items.Any() && chosenSongs.Any())
+        {
+            <MudItem>
                 <SongPicker ChosenSong="@chosenSongs[x]" Items="@searches.ElementAt(x).Tracks.Items" OnChoose="@(s => chosenSongs[x] = s)" />
             </MudItem>
-    }  
-}
+        }
+    }
 </MudGrid>
 
 
@@ -52,6 +49,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
         searchTerms = SetlistService.GetSearchList();
         playlistDetails = SetlistService.GetPlaylist();
 
@@ -77,12 +75,19 @@
     {
         if (string.IsNullOrEmpty(playlistDetails.name) || string.IsNullOrEmpty(playlistDetails.description))
         {
-            Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
             Snackbar.Add("Playlist Details must not be blank!", Severity.Error);
         }
         else
         {
             playlistUri = await spotifyAuthService.OrchestratePlaylist(playlistDetails, chosenSongs.Select(u => u.Uri).ToList());
+            if (string.IsNullOrEmpty(playlistUri))
+            {
+                Snackbar.Add("Error Building Playlist!", Severity.Error);
+            }
+            else
+            {
+                Snackbar.Add("Playlist Created!", Severity.Success);
+            }
         }
     }
 

@@ -1,5 +1,6 @@
-![image](https://github.com/user-attachments/assets/57a810b0-3230-47c2-9cce-c3e2b98f2bb5)
-![image](https://github.com/user-attachments/assets/f23cf723-4054-49ae-87ef-14d9b0fc4a9a)
-![image](https://github.com/user-attachments/assets/990f9071-3471-4607-9654-912b2115851e)
-![image](https://github.com/user-attachments/assets/ccf3795b-1f67-4b85-b96e-44cdd47daf84)
-[https://open.spotify.com/playlist/3TEupSbFQWYpGKGGEOEl5P?si=8d327b6c9f9145f4](https://open.spotify.com/playlist/3TEupSbFQWYpGKGGEOEl5P?si=8d327b6c9f9145f4)
+![image](https://github.com/user-attachments/assets/043797d8-5db9-4b3e-8f91-416d69397a2a)
+![image](https://github.com/user-attachments/assets/8578c99c-41c2-4d82-ae8f-76c1013121d5)
+![image](https://github.com/user-attachments/assets/ce2a40cd-dd1f-4fd1-ac15-bbba3c410935)
+![image](https://github.com/user-attachments/assets/90af3218-59ed-466b-991c-a337128f2711)
+
+[https://open.spotify.com/playlist/1b4w2wqOuIJOjM1T3ylD92?si=49318b81a85d4cde](https://open.spotify.com/playlist/1b4w2wqOuIJOjM1T3ylD92?si=49318b81a85d4cde)
